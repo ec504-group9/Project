@@ -29,7 +29,7 @@ public class Panel extends JFrame {
 	//holds the images (pre-compression) loaded from the folder
 	static BufferedImage[] listOfImages;
 
-
+/*
 	public static void main(String[] args) throws IOException {
 
 		//initialize the vector used to store broken down images
@@ -65,7 +65,7 @@ public class Panel extends JFrame {
 					//you can change the time between frames here
 				}, 0, 100, TimeUnit.MILLISECONDS);
 	}
-
+*/
 
 	public Panel() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
