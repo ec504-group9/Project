@@ -22,15 +22,13 @@ public class GUI extends JFrame implements ActionListener {
 	private JMenu fileMenu;
 	private JMenuItem addMenuItem,quitMenuItem;
 	
-	private JPanel mainPanel;
+	private JPanel mainPanel, fileListPanel;
 	
 	
 	/*
 	 * Default Constructor
 	 */
 	public GUI() {
-		// set up gui
-		setupGUI();
 	}
 	
 	/*
@@ -52,7 +50,7 @@ public class GUI extends JFrame implements ActionListener {
 	/*
 	 * Function that sets up the gui layout.
 	 */
-	protected void setupGUI() {
+	public void setupGUI() {
 		//Create and set up the window.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -75,6 +73,7 @@ public class GUI extends JFrame implements ActionListener {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.DARK_GRAY);
         getContentPane().add(mainPanel);
+        
         //Display the window.
         setVisible(true);
 	}

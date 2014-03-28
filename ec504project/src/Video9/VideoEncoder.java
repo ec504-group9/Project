@@ -7,6 +7,7 @@ public class VideoEncoder {
 		
 		// launch GUI
 		GUI gui = new GUI();
+		gui.setupGUI();
 		
 	}
 
