@@ -13,7 +13,7 @@ import javax.swing.*;
  *
  */
 @SuppressWarnings("serial")
-public class GUI extends JFrame implements ActionListener {
+public class GUI extends JFrame implements ActionListener,Runnable {
 	
 	/*
 	 * GUI Components
@@ -50,7 +50,8 @@ public class GUI extends JFrame implements ActionListener {
 	/*
 	 * Function that sets up the gui layout.
 	 */
-	public void setupGUI() {
+	 @Override
+	public void run() {
 		//Create and set up the window.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
