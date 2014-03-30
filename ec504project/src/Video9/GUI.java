@@ -29,6 +29,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	 * Default Constructor
 	 */
 	public GUI() {
+		this.run();
 	}
 	
 	/*
