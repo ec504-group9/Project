@@ -20,7 +20,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	 */
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
-	private JMenuItem addMenuItem,quitMenuItem;
+	private JMenuItem addMenuItem, viewMenuItem, quitMenuItem;
 	
 	private JPanel mainPanel, fileListPanel;
 	
@@ -42,8 +42,8 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 		if (source == quitMenuItem) {
 			System.exit(0);				// quit
 		}
-		if (source == addMenuItem) {
-			handleAddImageEvent();		// handle add menuItem
+		if (source == viewMenuItem) {
+			handleViewImageEvent();		// handle add menuItem
 		}
 	}
 	
@@ -65,9 +65,12 @@ public class GUI extends JFrame implements ActionListener,Runnable {
         fileMenu = new JMenu("File");			// menu
         addMenuItem = new JMenuItem("Add...");	// item
         addMenuItem.addActionListener(this);
+        viewMenuItem = new JMenuItem("View");	// item
+        viewMenuItem.addActionListener(this);
         quitMenuItem = new JMenuItem("Quit");	// item
         quitMenuItem.addActionListener(this);
         fileMenu.add(addMenuItem);
+        fileMenu.add(viewMenuItem);
         fileMenu.add(quitMenuItem);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
@@ -84,7 +87,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	/*
 	 * Handles an add image event
 	 */
-	protected void handleAddImageEvent() {
+	protected void handleViewImageEvent() {
 		Viewer v = new Viewer();
 	}
 	

@@ -66,7 +66,8 @@ public class Main {
                     break;
                     
                 case "view":
-                    
+                	Viewer v = new Viewer();
+                    /*
                     if (argsLength != 2 || args[1].length() <= EXTENSIONLength) {
                         System.out.println("Incorrect view command format. Exiting program...");
                     }
@@ -87,6 +88,7 @@ public class Main {
                         
                     }
                     break;
+                    */
             }
         }
         else {
