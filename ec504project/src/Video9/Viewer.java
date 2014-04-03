@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
-public class Panel extends JFrame {
+public class Viewer extends JFrame {
 	private BufferedImage image;
 	private static int index;
 	private JPanel contentPane;
@@ -29,6 +29,7 @@ public class Panel extends JFrame {
 	//holds the images (pre-compression) loaded from the folder
 	static BufferedImage[] listOfImages;
 
+	
 /*
 	public static void main(String[] args) throws IOException {
 
@@ -67,7 +68,23 @@ public class Panel extends JFrame {
 	}
 */
 
-	public Panel() {
+	public Viewer() {
+		//initialize the vector used to store broken down images
+				video = new Vector <ImageBreakDown>();
+				
+				//initialize the index used to traverse the "video" structure
+				index = 0;
+
+		    //path to the folder containing the images*********************************************************************
+				String folder = "/ad/eng/users/s/a/sahin/workspace/VideoEncoder/ImageFiles";
+				
+				//load images
+				getFiles(folder);
+				
+				//breakdown the images. breakdown() function also adds the broken down images to the video structure
+				for(BufferedImage img : listOfImages)
+					breakdown(img);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, video.get(0).width, video.get(0).height);
 		contentPane = new JPanel();
@@ -75,8 +92,23 @@ public class Panel extends JFrame {
 		setContentPane(contentPane);
 		JLabel lblNewLabel = new JLabel(new ImageIcon("simple.png"));
 		contentPane.add(lblNewLabel);
+		
+		//make frame visible
+				this.setVisible(true);
+				
+		    //manages the order in which the threads are executed. It is necessary to do something similar for gui modification
+				Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+						new Runnable() {
+							@Override
+							public void run() {
+								//if(index!=-1)
+								changeImage();
+							}
+							//you can change the time between frames here
+						}, 0, 100, TimeUnit.MILLISECONDS);
 
 	}
+	
 
 	//changes the image being displayed in the panel
 	private void changeImage() {

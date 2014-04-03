@@ -49,6 +49,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	
 	
 	/*
+	 * 
 	 * Function that sets up the gui layout.
 	 */
 	 @Override
@@ -84,7 +85,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	 * Handles an add image event
 	 */
 	protected void handleAddImageEvent() {
-		System.out.println("hi");
+		Viewer v = new Viewer();
 	}
 	
 

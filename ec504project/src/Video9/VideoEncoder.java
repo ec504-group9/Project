@@ -2,7 +2,7 @@ package Video9;
 
 public class VideoEncoder {
 
-	
+	/*
 	public static void main(String[] args) {
 		
 		// launch GUI
@@ -10,5 +10,5 @@ public class VideoEncoder {
 		//gui.setupGUI();
 		gui.run();
 	}
-
+	*/
 }
