@@ -16,7 +16,7 @@ import javax.swing.*;
 public class GUI extends JFrame implements ActionListener,Runnable {
 	
 	/*
-	 * GUI Components
+	 * GUI Components - dummy comment
 	 */
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
