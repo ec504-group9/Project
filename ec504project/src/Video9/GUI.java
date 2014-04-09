@@ -88,7 +88,7 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 	 * Handles an add image event
 	 */
 	protected void handleViewImageEvent() {
-		Viewer v = new Viewer();
+		//Decoder d = new Decoder(outputFilename);
 	}
 	
 

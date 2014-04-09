@@ -11,18 +11,14 @@ import javax.imageio.ImageIO;
 
 public class Encoder{
 
-	public static int[][] breakdown;
-	public static List<BufferedImage> buffered;
-	public static BufferedImage[] listOfImages;
+	public int[][] breakdown;
+	public List<BufferedImage> buffered;
+	public BufferedImage[] listOfImages;
 
-	public static void main(String[] args) throws IOException {
-
-		//path to the folder containing the images*********************************************************************
-		String folder = DirectoryPaths.getPathtoimages();
-		String filename = DirectoryPaths.getPathtoserializable();
+	Encoder(String[] paths, String outputfile) {
 
 		//load images
-		getFiles(folder);
+		getFiles(paths);
 		
 		//create and save the video file
 		Video video = new Video(buffered.size(), buffered.get(0).getHeight(), buffered.get(0).getWidth(), buffered);
@@ -31,7 +27,7 @@ public class Encoder{
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try {
-			fos = new FileOutputStream(filename);
+			fos = new FileOutputStream(outputfile);
 			out = new ObjectOutputStream(fos);
 			out.writeObject(video);
 			out.close();
@@ -43,20 +39,17 @@ public class Encoder{
 	}
 
 	//get all image file from the folder
-	public static void getFiles(String path){
+	void getFiles(String[] path){
 
-		File folder = new File(path);
-
-		if (folder.isDirectory()) {
-			buffered = new ArrayList<BufferedImage>();
-			for (File listfiles : folder.listFiles()){
-				buffered.add(Loadimage(listfiles));
-			}
+		buffered = new ArrayList<BufferedImage>();
+		for (String filename : path){
+			File file = new File(filename);
+			buffered.add(Loadimage(file));
 		}
 	}
 
 	//loads images from the list of files
-	static BufferedImage Loadimage(File file){
+	BufferedImage Loadimage(File file){
 		BufferedImage Image = null;
 
 		try {

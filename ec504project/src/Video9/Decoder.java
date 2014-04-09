@@ -2,7 +2,6 @@ package Video9;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -17,15 +16,13 @@ public class Decoder {
 	public static List<BufferedImage> listOfImages;
 	public static int[][] encoded;
 
-	public static void main(String[] args) throws IOException {
-
-		String filename = DirectoryPaths.getPathtoserializable();
+	Decoder(String videofile) {
 
 		// read the object from file
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
 		try {
-			fis = new FileInputStream(filename);
+			fis = new FileInputStream(videofile);
 			in = new ObjectInputStream(fis);
 			video = (Video) in.readObject();
 			in.close();
@@ -39,7 +36,7 @@ public class Decoder {
 		//create a new Panel, the only panel used by this iteration of the function
 		int width = listOfImages.get(0).getWidth();
 		int height = listOfImages.get(0).getHeight();
-		final Panel frame = new Panel(width, height);
+		final Viewer frame = new Viewer(width, height);
 
 		//make frame visible
 		frame.setVisible(true);
@@ -51,7 +48,7 @@ public class Decoder {
 					public void run() {
 						frame.changeImage(nextImage());
 					}
-				}, 0, 100, TimeUnit.MILLISECONDS);
+				}, 0, 150, TimeUnit.MILLISECONDS);
 	}
 
 	//gets the next image in the array list, circles around if it is done
