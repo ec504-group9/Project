@@ -17,19 +17,24 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 
+		Encoder e = new Encoder("/home/onur/git/Images", "compressed.ser");
+		//Decoder d = new Decoder("/home/onur/git/Project/ec504project/compressed.ser");
+		/*
 		int argsLength = args.length;
 		String EXTENSION = ".ser";
 		int EXTENSIONLength = EXTENSION.length();
 
 		if (argsLength > 0) {
 
-			switch (args[0]) {
-			case "gui":
+			Commands cmd = Commands.valueOf(args[0]);
+			
+			switch (cmd) {
+			case gui:
 				@SuppressWarnings("unused")
 				GUI gui = new GUI();
 				break;
 
-			case "encode":
+			case encode:
 
 				if (argsLength < 4 && !"--output".equals(args[argsLength - 2])){ // if "--output" flag not found, exit encoding
 					System.out.println("Command format invalid. No '--output' flag found or not enough arguments entered.");
@@ -52,7 +57,7 @@ public class Main {
 						for (int ii = 1; ii < argsLength - 2; ii++){
 							imageFiles[ii - 1] = args[ii];
 						}
-
+						System.out.println(imageFiles[0]);
 						System.out.println("Encoding started...\n");
 						Encoder e = new Encoder(imageFiles, outputFilename);
 						System.out.println("Encoding completed...\n");
@@ -63,7 +68,7 @@ public class Main {
 				}
 				break;
 
-			case "view":
+			case view:
 				if (argsLength != 2 || args[1].length() <= EXTENSIONLength) {
 					System.out.println("Incorrect view command format. Exiting program...");
 				}
@@ -95,7 +100,13 @@ public class Main {
 			System.out.println("Command not specified...");
 			System.out.println("Exiting program...");
 		}
-
+		*/
+	}
+	
+	public enum Commands{
+		gui,
+		encode,
+		view
 	}
 
 }

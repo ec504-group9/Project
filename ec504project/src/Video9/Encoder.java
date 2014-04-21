@@ -15,13 +15,18 @@ public class Encoder{
 	public List<BufferedImage> buffered;
 	public BufferedImage[] listOfImages;
 
-	Encoder(String[] paths, String outputfile) {
+	Encoder(String paths, String outputfile) {
 
 		//load images
 		getFiles(paths);
+
+		// Down-sample the image by 4x
+		Downsampler ds = new Downsampler();
+		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
+		DownsampledImages = ds.Downsample(buffered);
 		
-		//create and save the video file
-		Video video = new Video(buffered.size(), buffered.get(0).getHeight(), buffered.get(0).getWidth(), buffered);
+		// Create a video file containing downsampled images
+		Video video = new Video(buffered.size(), buffered.get(0).getHeight(), buffered.get(0).getWidth(), DownsampledImages);
 
 		// save the object to file
 		FileOutputStream fos = null;
@@ -34,18 +39,30 @@ public class Encoder{
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
+		
 		System.out.print("File sucsessfully saved\n");
 	}
 
 	//get all image file from the folder
-	void getFiles(String[] path){
-
+	void getFiles(String paths){
+		
+		File folder = new File(paths);
+		File[] listOfFiles = folder.listFiles();
 		buffered = new ArrayList<BufferedImage>();
-		for (String filename : path){
+		
+		for (File file : listOfFiles) {
+			if (file.isFile()) {
+				//System.out.println(paths + "/" + file.getName());
+				buffered.add(Loadimage(file));
+			}
+		}
+		/*
+		
+		for (String filename : paths){
 			File file = new File(filename);
 			buffered.add(Loadimage(file));
 		}
+		*/
 	}
 
 	//loads images from the list of files

@@ -56,6 +56,8 @@ public class Video implements Serializable {
 		//serialize this file
 		out.defaultWriteObject();
 		ImageIO.write(hugeImage, "png", out); // png is lossless
+		File outputfile = new File("HUGE.png");
+	    ImageIO.write(hugeImage, "png", outputfile);
 		System.out.print("Saved!\n");
 
 	}
