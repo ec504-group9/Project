@@ -31,7 +31,10 @@ public class Decoder {
 		}
 		
 		//build the images back from serialized video data
-		listOfImages = video.getImages();
+		
+		// Up-sizing the image
+		//NeirestNeighbor nnInterpolatorNeighbor = new NeirestNeighbor();
+		//listOfImages = nnInterpolatorNeighbor.Upsample(video.getImages());
 
 		//create a new Panel, the only panel used by this iteration of the function
 		int width = listOfImages.get(0).getWidth();

@@ -6,6 +6,16 @@
 
 package Video9;
 
+import scalingAlgorithms.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 /**
  *
  * @author Jeannie
@@ -16,9 +26,32 @@ public class Main {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-
+		
 		Encoder e = new Encoder("/home/onur/git/Images", "compressed.ser");
 		//Decoder d = new Decoder("/home/onur/git/Project/ec504project/compressed.ser");
+		/*
+		BufferedImage test = null;
+		try {
+			test = ImageIO.read(new File("/home/onur/git/Images/wall_e.jpeg"));
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Upsampler up = new Upsampler();
+		BufferedImage upsampled = up.BilinearUpsample(test, test.getWidth(), test.getHeight(), test.getWidth()*3, test.getHeight()*3);
+		
+		// Convolve with an sharpening filter
+		BufferedImageOp op = new ConvolveOp(new Kernel(3, 3, new float[]{-1, -1, -1,-1, 9, -1,-1, -1, -1}));
+		upsampled = op.filter(upsampled, null);
+		try {
+			ImageIO.write(upsampled, "png", new File("bilinear.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
 		/*
 		int argsLength = args.length;
 		String EXTENSION = ".ser";

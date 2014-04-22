@@ -13,8 +13,9 @@ public class Video implements Serializable {
 	private static final long serialVersionUID = -3254615303479932485L;
 	private int videoLength, imageHeight, imageWidth;
 	private transient List<BufferedImage> Images;
-
-
+	private int SCALING_FACTOR;
+	private final int FRAMES_PER_COL = 40;
+	
 	public List<BufferedImage> getImages() {
 		return Images;
 	}
@@ -32,9 +33,9 @@ public class Video implements Serializable {
 
 
 		int height, width;
-		if(videoLength > 50){
-			height = 50;
-			width = (int) Math.ceil(((double)videoLength)/50);
+		if(videoLength > FRAMES_PER_COL){
+			height = FRAMES_PER_COL;
+			width = (int) Math.ceil(((double)videoLength)/40);
 		}
 		else{
 			height = videoLength;
@@ -47,7 +48,7 @@ public class Video implements Serializable {
 		int x=0;
 		int y=0;
 		for(int i=0; i<videoLength; i++){
-			if(y>=50){y=0; x++;}
+			if(y>=FRAMES_PER_COL){y=0; x++;}
 			g2d.drawImage(Images.get(i), x*Images.get(0).getWidth(), y*Images.get(0).getHeight(), null);
 			y++;
 		}
@@ -71,7 +72,7 @@ public class Video implements Serializable {
 		Images = new ArrayList<BufferedImage>();
 
 		for(int i=0; i<videoLength; i++){
-			if(y>=50){y=0; x++;}
+			if(y>=FRAMES_PER_COL){y=0; x++;}
 			BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 			image = hugeImage.getSubimage(x*imageWidth, y*imageHeight, imageWidth, imageHeight);
 			y++;

@@ -9,6 +9,8 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
+import scalingAlgorithms.Downsampler;
+
 public class Encoder{
 
 	public int[][] breakdown;
@@ -23,11 +25,11 @@ public class Encoder{
 		// Down-sample the image by 4x
 		Downsampler ds = new Downsampler();
 		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
-		DownsampledImages = ds.Downsample(buffered);
+		DownsampledImages = ds.Downsample(buffered, 2);
 		
-		// Create a video file containing downsampled images
-		Video video = new Video(buffered.size(), buffered.get(0).getHeight(), buffered.get(0).getWidth(), DownsampledImages);
-
+		// Create a video file containing down-sampled images
+		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages);
+		
 		// save the object to file
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
