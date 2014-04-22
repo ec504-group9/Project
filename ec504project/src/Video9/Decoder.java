@@ -37,7 +37,7 @@ public class Decoder {
 
 		// Up-sizing the image
 		Upsampler up = new Upsampler();
-		listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+		listOfImages = up.ICBIUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
 
 		//create a new Panel, the only panel used by this iteration of the function
 		int width = listOfImages.get(0).getWidth();

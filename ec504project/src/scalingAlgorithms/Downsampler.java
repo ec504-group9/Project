@@ -45,7 +45,7 @@ public class Downsampler {
 		}
 		//BufferedImage image = new BufferedImage(hr, imageHeight, BufferedImage.TYPE_INT_RGB);
 		
-		System.out.print("Daown sampled succesfully!\n");
+		System.out.print("Down sampled succesfully!\n");
 		return DownsampledImageList;
 	}
 

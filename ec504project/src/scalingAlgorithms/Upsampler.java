@@ -94,8 +94,51 @@ public class Upsampler {
 			}
 			upsampledFrames.add(upSampled);
 		}
+		System.out.print("Up sampled succesfully!\n");
 		return upsampledFrames;
 	}
 
 
-}
+	public List<BufferedImage> ICBIUpsample(List<BufferedImage> frames, int w, int h, int scalingFactor) {
+		List<BufferedImage> upsampledFrames = new ArrayList<BufferedImage>();
+
+		int w2 = w*2;
+		int h2 = h*2;
+
+		for(int f=0;f<frames.size(); f++){
+			BufferedImage original = frames.get(f);
+			BufferedImage upSampled = new BufferedImage(w2, h2, BufferedImage.TYPE_INT_RGB);
+
+			//fill new image with pixels from old image
+			for (int i=0;i<h;i++) {
+				for (int j=0;j<w;j++) {
+					upSampled.setRGB(2*j, 2*i, original.getRGB(j, i));					
+				}
+			}
+
+			//TODO
+			//get the corner cases, ie the sides
+						
+			for (int j=3;j<h2-3;j+=2) {
+				for (int i=3;i<w2-3;i+=2) {
+					int I11 = upSampled.getRGB(i-3,j+1) + upSampled.getRGB(i-1,j-1) + upSampled.getRGB(i+1,j-3)
+							- 3*upSampled.getRGB(i-1,j+1) - 3*upSampled.getRGB(i+1,j-1)
+							+ upSampled.getRGB(i-1,j+3) + upSampled.getRGB(i+1,j+1) + upSampled.getRGB(i+3,j-1); 
+
+					int I22 = upSampled.getRGB(i-1,j-3) + upSampled.getRGB(i+1,j-1) + upSampled.getRGB(i+3,j+1) 
+							- 3*upSampled.getRGB(i-1,j-1) - 3*upSampled.getRGB(i+1,j+1) + upSampled.getRGB(i-3,j-1) 
+							+ upSampled.getRGB(i-1,j+1) + upSampled.getRGB(i+1,j+3); 
+
+					if(I11 < I22)
+						upSampled.setRGB(i, j, (upSampled.getRGB(i-1, j-1)+upSampled.getRGB(i+1, j+1))/2 );
+					else
+						upSampled.setRGB(i, j, (upSampled.getRGB(i+1, j-1)+upSampled.getRGB(i-1, j+1))/2 );						
+				}
+			}
+			upsampledFrames.add(upSampled);
+		}
+
+			System.out.print("Up sampled succesfully!\n");
+			return upsampledFrames;
+		}
+	}
