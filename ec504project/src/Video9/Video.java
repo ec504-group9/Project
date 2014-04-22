@@ -16,17 +16,24 @@ public class Video implements Serializable {
 	private int SCALING_FACTOR;
 	private final int FRAMES_PER_COL = 40;
 	
+
+	
+	public int getSCALING_FACTOR() {
+		return SCALING_FACTOR;
+	}
+
 	public List<BufferedImage> getImages() {
 		return Images;
 	}
 
 	public Video(int videoLength, int imageHeight, int imageWidth,
-			List<BufferedImage> ImageSequence) {
+			List<BufferedImage> ImageSequence, int scaling) {
 		super();
 		this.videoLength = videoLength;
 		this.imageHeight = imageHeight;
 		this.imageWidth = imageWidth;
 		this.Images = ImageSequence;
+		this.SCALING_FACTOR = scaling;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

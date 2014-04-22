@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import scalingAlgorithms.Upsampler;
+
 public class Decoder {
 
 	//global objects to be changed and viewed
 	public static int Index;
 	public static Video video;
-	//public static BufferedImage[] listOfImages;
 	public static List<BufferedImage> listOfImages;
+	public static List<BufferedImage> compressed;
 	public static int[][] encoded;
 
 	Decoder(String videofile) {
@@ -31,10 +33,11 @@ public class Decoder {
 		}
 		
 		//build the images back from serialized video data
-		
+		compressed = video.getImages();
+
 		// Up-sizing the image
-		//NeirestNeighbor nnInterpolatorNeighbor = new NeirestNeighbor();
-		//listOfImages = nnInterpolatorNeighbor.Upsample(video.getImages());
+		Upsampler up = new Upsampler();
+		listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
 
 		//create a new Panel, the only panel used by this iteration of the function
 		int width = listOfImages.get(0).getWidth();

@@ -27,8 +27,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		Encoder e = new Encoder("/home/onur/git/Images", "compressed.ser");
-		//Decoder d = new Decoder("/home/onur/git/Project/ec504project/compressed.ser");
+		Encoder e = new Encoder("/home/osarenk1/Desktop/images", "compressed.ser", 2);
+		Decoder d = new Decoder("compressed.ser");
 		/*
 		BufferedImage test = null;
 		try {

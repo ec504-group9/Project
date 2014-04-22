@@ -3,7 +3,6 @@ package scalingAlgorithms;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -46,6 +45,7 @@ public class Downsampler {
 		}
 		//BufferedImage image = new BufferedImage(hr, imageHeight, BufferedImage.TYPE_INT_RGB);
 		
+		System.out.print("Daown sampled succesfully!\n");
 		return DownsampledImageList;
 	}
 
