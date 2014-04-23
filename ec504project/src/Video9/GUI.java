@@ -3,6 +3,7 @@ package Video9;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -13,105 +14,116 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 
 /**
- * GUI Class. Launches a GUI that will allow all of the same operations as the command line interface.
+ * GUI Class. Launches a GUI that will allow all of the same operations as the
+ * command line interface.
+ * 
  * @author johnny
- *
+ * 
  */
 @SuppressWarnings("serial")
-public class GUI extends JFrame implements ActionListener,Runnable {
-	
+public class GUI extends JFrame implements ActionListener, Runnable {
+
 	/*
 	 * GUI Components - dummy comment
 	 */
-	
+
 	public static List<BufferedImage> listOfImages;
 	public static int Index;
-	
+
 	private JMenuBar menuBar;
 	private JMenuBar encoderBar;
 	private JMenu fileMenu;
 	private JMenu encoderMenu;
-	private JMenuItem addMenuItem, viewMenuItem, quitMenuItem;
-	
+	private JMenuItem addMenuItem, viewMenuItem, quitMenuItem, filesMenuItem;
+
 	private JPanel encoder, decoder;
 	private Viewer viewer;
-	
+
 	public ProgressMonitor progressbar = new ProgressMonitor(this, "", "", 0, 0);
 
-	//for the decoder
+	// for the decoder
 	JLabel label = new JLabel("Select File to Decode:");;
-	JLabel labeleffect = new JLabel("Select realtime effects (Only one may be selected):");
-	
-    JTextField textField = new JTextField();
-    JRadioButton normalBox = new JRadioButton("None",true);
-    JRadioButton grayscaleBox = new JRadioButton("Grayscale",false);
-    JRadioButton snowflakeBox = new JRadioButton("Snowflake",false);
-    JRadioButton UnknownBox = new JRadioButton("Unknown",false);
-    JButton findButton = new JButton("Find File");
-    JButton decodeButton = new JButton("Decode");
+	JLabel labeleffect = new JLabel(
+			"Select realtime effects (Only one may be selected):");
+
+	JTextField textField = new JTextField();
+	JRadioButton normalBox = new JRadioButton("None", true);
+	JRadioButton grayscaleBox = new JRadioButton("Grayscale", false);
+	JRadioButton snowflakeBox = new JRadioButton("Snowflake", false);
+	JRadioButton UnknownBox = new JRadioButton("Unknown", false);
+	JButton findButton = new JButton("Find File");
+	JButton decodeButton = new JButton("Decode");
+	static JButton filesButton = new JButton("Browse Folders");
+	static JTextField imageFolderPath = new JTextField();
 	ButtonGroup effectsgroup = new ButtonGroup();
-	
-    private JFileChooser fc;
-    
-	
+
+	private JFileChooser fc;
+	private JFileChooser folderBrowser;
+
 	/*
 	 * Default Constructor
 	 */
 	public GUI() {
 		this.run();
 	}
-	
+
 	/*
 	 * Listens for ActionEvents and processes them accordingly.
 	 */
-	public void actionPerformed (ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {
 		// find out where the event is coming from
 		Object source = e.getSource();
-		
+
 		if (source == quitMenuItem) {
-			System.exit(0);				// quit
+			System.exit(0); // quit
 		}
 		if (source == viewMenuItem) {
-			//handleViewImageEvent();		// handle add menuItem
+			// handleViewImageEvent(); // handle add menuItem
 			Encodeworker en = new Encodeworker(this);
 			en.execute();
-			//progressbar.close();
+			// progressbar.close();
 
 		}
-		if(source == findButton)
-		{
+		if (source == findButton) {
 			int returnVal = fc.showOpenDialog(this);
 			textField.setText(fc.getSelectedFile().getAbsolutePath());
 		}
-		if(source == decodeButton)
-		{
-			try{
+		if (source == decodeButton) {
+			try {
 				handleViewImageEvent();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
-	}
-	class Encodeworker extends SwingWorker<Void,Integer>{
-		GUI mygui;
-		public Encodeworker(GUI myparent)
-		{
-			this.mygui =myparent;
+		if(source == filesButton){
+			int returnVal = folderBrowser.showOpenDialog(this);
+			imageFolderPath.setText(folderBrowser.getSelectedFile().getAbsolutePath());
 		}
+		if(source == filesMenuItem){
+			encodingUserMenu();
+		}
+	}
+
+	class Encodeworker extends SwingWorker<Void, Integer> {
+		GUI mygui;
+
+		public Encodeworker(GUI myparent) {
+			this.mygui = myparent;
+		}
+
 		@Override
-		public Void doInBackground()
-		{
-			Encoder en = new Encoder("/home/osarenk1/Desktop/images", "compressed.ser", 2, mygui);
+		public Void doInBackground() {
+			Encoder en = new Encoder("/home/osarenk1/Desktop/images",
+					"compressed.ser", 2, mygui);
 			return null;
 		}
 	}
-	
+
 	/*
 	 * 
 	 * Function that sets up the gui layout.
 	 */
-	 @Override
+	@Override
 	public void run() {
 		//Create and set up the window.
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -130,9 +142,12 @@ public class GUI extends JFrame implements ActionListener,Runnable {
         viewMenuItem.addActionListener(this);
         quitMenuItem = new JMenuItem("Quit");	// item
         quitMenuItem.addActionListener(this);
+        filesMenuItem = new JMenuItem("Select Images Folder");
+        filesMenuItem.addActionListener(this);
         fileMenu.add(addMenuItem);
         fileMenu.add(viewMenuItem);
         fileMenu.add(quitMenuItem);
+        encoderMenu.add(filesMenuItem);
         menuBar.add(fileMenu);
         menuBar.add(encoderMenu);
         setJMenuBar(menuBar);
@@ -148,6 +163,11 @@ public class GUI extends JFrame implements ActionListener,Runnable {
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         findButton.addActionListener(this);
         decodeButton.addActionListener(this);
+        filesButton.addActionListener(this);
+        
+        // Folder Browser for Selecting the Image Folder
+        folderBrowser = new JFileChooser();
+        folderBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         
         // encoder part of the gui - dark gray
         encoder = new JPanel(new BorderLayout());
@@ -219,36 +239,36 @@ public class GUI extends JFrame implements ActionListener,Runnable {
         //Display the window.
         setVisible(true);
 	}
-	 /*
-	class progressbar extends ProgressMonitor{
-		
-		public progressbar(Component parentComponent, Object message,
-				String note, int min, int max) {
-			super(parentComponent, message, note, min, max);
-			// TODO Auto-generated constructor stub
-			
-		}
-		
-	}
-	*/
+
+	/*
+	 * class progressbar extends ProgressMonitor{
+	 * 
+	 * public progressbar(Component parentComponent, Object message, String
+	 * note, int min, int max) { super(parentComponent, message, note, min,
+	 * max); // TODO Auto-generated constructor stub
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 	/*
 	 * Handles an add image event
 	 */
 	protected void handleViewImageEvent() {
-		
+
 		Decoder d = new Decoder(textField.getText());
 		listOfImages = d.getListOfImages();
 		Index = 0;
-		
+
 		int width = listOfImages.get(0).getWidth();
 		int height = listOfImages.get(0).getHeight();
-        setSize(width, height+200);
+		setSize(width, height + 200);
 
 		viewer.setSize(width, height);
 		viewer.setVisible(true);
 
-		
-		//manages the order in which the threads are executed. It is necessary to do something similar for GUI modification
+		// manages the order in which the threads are executed. It is necessary
+		// to do something similar for GUI modification
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
 				new Runnable() {
 					@Override
@@ -257,11 +277,36 @@ public class GUI extends JFrame implements ActionListener,Runnable {
 					}
 				}, 0, 150, TimeUnit.MILLISECONDS);
 	}
-	
-	//gets the next image in the array list, circles around if it is done
+
+	// gets the next image in the array list, circles around if it is done
 	static BufferedImage nextImage() {
 		Index++;
-		if(Index>=listOfImages.size()) Index=0;
+		if (Index >= listOfImages.size())
+			Index = 0;
 		return listOfImages.get(Index);
 	}
+	
+	private static void encodingUserMenu() {
+		
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		panel.add(new JLabel("Select the Folder Containing Images :"));
+		panel.add(filesButton);
+		panel.add(imageFolderPath);
+		panel.add(new JLabel("Select Quality Level (1 Highest) :"));
+        Integer[] items = {1,2,3,4};
+        JComboBox combo = new JComboBox(items);
+        JTextField field1 = new JTextField("");
+        panel.add(combo);
+        panel.add(new JLabel("Enter Output File Name: "));
+        panel.add(field1);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Video Encoding Options",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            System.out.println(combo.getSelectedItem()
+                + " " + field1.getText());
+        } else {
+            System.out.println("Cancelled");
+        }
+    }
 }
