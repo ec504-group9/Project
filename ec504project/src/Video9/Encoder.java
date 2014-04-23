@@ -8,30 +8,34 @@ import java.io.ObjectOutputStream;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
+import scalingAlgorithms.Downsampler;
 
 public class Encoder{
 
-	public static int[][] breakdown;
-	public static List<BufferedImage> buffered;
-	public static BufferedImage[] listOfImages;
-
-	public static void main(String[] args) throws IOException {
-
-		//path to the folder containing the images*********************************************************************
-		String folder = DirectoryPaths.getPathtoimages();
-		String filename = DirectoryPaths.getPathtoserializable();
-
+	public int[][] breakdown;
+	public List<BufferedImage> buffered;
+	private GUI guiHandler;
+	
+	/* Encoder for the Command Line  */
+	Encoder(String paths, String outputfile, int ratio) {
 		//load images
-		getFiles(folder);
-		
-		//create and save the video file
-		Video video = new Video(buffered.size(), buffered.get(0).getHeight(), buffered.get(0).getWidth(), buffered);
+		getFiles(paths);
 
+		// Down-sample the image by 4x
+		Downsampler ds = new Downsampler(guiHandler);
+		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
+		DownsampledImages = ds.Downsample(buffered, ratio);
+		
+		// Create a video file containing down-sampled images
+		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		
 		// save the object to file
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try {
-			fos = new FileOutputStream(filename);
+			fos = new FileOutputStream(outputfile);
 			out = new ObjectOutputStream(fos);
 			out.writeObject(video);
 			out.close();
@@ -41,22 +45,66 @@ public class Encoder{
 
 		System.out.print("File sucsessfully saved\n");
 	}
+	
+	/* Encoder Constructor for the GUI */
+	Encoder(String paths, String outputfile, int ratio, GUI guiHandler) {
+		this.guiHandler = guiHandler;
+		//load images
+		getFiles(paths);
+
+		// Down-sample the image by 4x
+		Downsampler ds = new Downsampler(guiHandler);
+		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
+		DownsampledImages = ds.Downsample(buffered, ratio);
+		
+		// Create a video file containing down-sampled images
+		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		
+		guiHandler.progressbar.setNote(String.format("Now saving the encoded file! Please Wait!"));
+		
+		// save the object to file
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try {
+			fos = new FileOutputStream(outputfile);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(video);
+			out.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		guiHandler.progressbar.close();
+		JOptionPane.showMessageDialog(null,
+			    "File succesfully saved!");
+		System.out.print("File sucsessfully saved\n");
+	}
 
 	//get all image file from the folder
-	public static void getFiles(String path){
-
+	void getFiles(String path){
+		
 		File folder = new File(path);
-
-		if (folder.isDirectory()) {
-			buffered = new ArrayList<BufferedImage>();
-			for (File listfiles : folder.listFiles()){
-				buffered.add(Loadimage(listfiles));
+		File[] listOfFiles = folder.listFiles();
+		buffered = new ArrayList<BufferedImage>();
+		
+		for (File file : listOfFiles) {
+			if (file.isFile()) {
+				buffered.add(Loadimage(file));
 			}
 		}
 	}
+	
+	//get files from list of files
+	void getFiles(String[] paths){
+		
+		for (String filename : paths){
+			File file = new File(filename);
+			buffered.add(Loadimage(file));
+		}
+
+	}
 
 	//loads images from the list of files
-	static BufferedImage Loadimage(File file){
+	BufferedImage Loadimage(File file){
 		BufferedImage Image = null;
 
 		try {
@@ -65,4 +113,5 @@ public class Encoder{
 		}
 		return Image;
 	}
+	
 }
