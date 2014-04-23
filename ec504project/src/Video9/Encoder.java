@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import scalingAlgorithms.Downsampler;
 
@@ -15,14 +16,15 @@ public class Encoder{
 
 	public int[][] breakdown;
 	public List<BufferedImage> buffered;
-
+	private GUI guiHandler;
+	
+	/* Encoder for the Command Line  */
 	Encoder(String paths, String outputfile, int ratio) {
-
 		//load images
 		getFiles(paths);
 
 		// Down-sample the image by 4x
-		Downsampler ds = new Downsampler();
+		Downsampler ds = new Downsampler(guiHandler);
 		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
 		DownsampledImages = ds.Downsample(buffered, ratio);
 		
@@ -40,7 +42,40 @@ public class Encoder{
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
+		System.out.print("File sucsessfully saved\n");
+	}
+	
+	/* Encoder Constructor for the GUI */
+	Encoder(String paths, String outputfile, int ratio, GUI guiHandler) {
+		this.guiHandler = guiHandler;
+		//load images
+		getFiles(paths);
+
+		// Down-sample the image by 4x
+		Downsampler ds = new Downsampler(guiHandler);
+		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
+		DownsampledImages = ds.Downsample(buffered, ratio);
 		
+		// Create a video file containing down-sampled images
+		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		
+		guiHandler.progressbar.setNote(String.format("Now saving the encoded file! Please Wait!"));
+		
+		// save the object to file
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try {
+			fos = new FileOutputStream(outputfile);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(video);
+			out.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		guiHandler.progressbar.close();
+		JOptionPane.showMessageDialog(null,
+			    "File succesfully saved!");
 		System.out.print("File sucsessfully saved\n");
 	}
 
@@ -78,4 +113,5 @@ public class Encoder{
 		}
 		return Image;
 	}
+	
 }

@@ -262,7 +262,6 @@ public class Upsampler {
 				e.printStackTrace();
 			}
 			upsampledFrames.add(upSampled);
-			System.out.println(f);
 		}
 
 		System.out.print("Up sampled succesfully!\n");

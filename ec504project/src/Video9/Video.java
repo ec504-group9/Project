@@ -16,8 +16,6 @@ public class Video implements Serializable {
 	private int SCALING_FACTOR;
 	private final int FRAMES_PER_COL = 40;
 	
-
-	
 	public int getSCALING_FACTOR() {
 		return SCALING_FACTOR;
 	}
@@ -48,18 +46,20 @@ public class Video implements Serializable {
 			height = videoLength;
 			width = 1;
 		}
-
+		
 		BufferedImage hugeImage = new BufferedImage(Images.get(0).getWidth()*width, Images.get(0).getHeight()*height, BufferedImage.TYPE_INT_ARGB);
 		Graphics g2d = hugeImage.createGraphics();
-
+		
 		int x=0;
 		int y=0;
 		for(int i=0; i<videoLength; i++){
 			if(y>=FRAMES_PER_COL){y=0; x++;}
 			g2d.drawImage(Images.get(i), x*Images.get(0).getWidth(), y*Images.get(0).getHeight(), null);
 			y++;
+			
+			//guiHandler.progressbar.setNote(String.format("Encoding image %d of %d.\n", i , hr.size()));
 		}
-
+		
 		//TODO
 		//serialize this file
 		out.defaultWriteObject();
@@ -67,7 +67,6 @@ public class Video implements Serializable {
 		File outputfile = new File("HUGE.png");
 	    ImageIO.write(hugeImage, "png", outputfile);
 		System.out.print("Saved!\n");
-
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
