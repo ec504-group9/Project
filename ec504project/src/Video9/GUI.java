@@ -55,10 +55,13 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	JButton decodeButton = new JButton("Decode");
 	static JButton filesButton = new JButton("Browse Folders");
 	static JTextField imageFolderPath = new JTextField();
+	static JButton destinationButton = new JButton("Specify Destination Folder");
+	static JTextField destinationPath = new JTextField();
 	ButtonGroup effectsgroup = new ButtonGroup();
 
 	private JFileChooser fc;
 	private JFileChooser folderBrowser;
+	private JFileChooser destinationBrowser;
 
 	/*
 	 * Default Constructor
@@ -79,10 +82,9 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		}
 		if (source == viewMenuItem) {
 			// handleViewImageEvent(); // handle add menuItem
-			Encodeworker en = new Encodeworker(this);
-			en.execute();
+			//Encodeworker en = new Encodeworker(this);
+			//en.execute();
 			// progressbar.close();
-
 		}
 		if (source == findButton) {
 			int returnVal = fc.showOpenDialog(this);
@@ -99,22 +101,40 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 			int returnVal = folderBrowser.showOpenDialog(this);
 			imageFolderPath.setText(folderBrowser.getSelectedFile().getAbsolutePath());
 		}
+		if(source == destinationButton){
+			int returnVal = destinationBrowser.showOpenDialog(this);
+			destinationPath.setText(destinationBrowser.getSelectedFile().getAbsolutePath());
+		}
 		if(source == filesMenuItem){
 			encodingUserMenu();
 		}
 	}
 
 	class Encodeworker extends SwingWorker<Void, Integer> {
+		
 		GUI mygui;
+		String destionationPath;
+		String fileName;
+		String pathToImages;
+		int compresstionRatio;
 
-		public Encodeworker(GUI myparent) {
+		public Encodeworker(GUI myparent, String pathToImages, int compresstionRatio, String destionationPath, String fileName) {
 			this.mygui = myparent;
+			this.compresstionRatio = compresstionRatio;
+			this.destionationPath = destionationPath;
+			this.fileName = fileName;
+			this.pathToImages = pathToImages;
 		}
 
 		@Override
 		public Void doInBackground() {
-			Encoder en = new Encoder("/home/osarenk1/Desktop/images",
+			String fullName = destionationPath + "/" + fileName + ".ser";
+			Encoder en = new Encoder(pathToImages,
+					fullName, compresstionRatio, mygui);
+			/*
+			 * Encoder en = new Encoder("/home/osarenk1/Desktop/images",
 					"compressed.ser", 2, mygui);
+					*/
 			return null;
 		}
 	}
@@ -126,118 +146,123 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	@Override
 	public void run() {
 		//Create and set up the window.
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // size of window
-        setSize(685, 200);
-        
-        // menu bar
-        menuBar = new JMenuBar();				// bar
-        fileMenu = new JMenu("File");			// menu
-        encoderBar = new JMenuBar();				// 
-        encoderMenu = new JMenu("Encoder");			// 
-        addMenuItem = new JMenuItem("Add...");	// item
-        addMenuItem.addActionListener(this);
-        viewMenuItem = new JMenuItem("View");	// item
-        viewMenuItem.addActionListener(this);
-        quitMenuItem = new JMenuItem("Quit");	// item
-        quitMenuItem.addActionListener(this);
-        filesMenuItem = new JMenuItem("Select Images Folder");
-        filesMenuItem.addActionListener(this);
-        fileMenu.add(addMenuItem);
-        fileMenu.add(viewMenuItem);
-        fileMenu.add(quitMenuItem);
-        encoderMenu.add(filesMenuItem);
-        menuBar.add(fileMenu);
-        menuBar.add(encoderMenu);
-        setJMenuBar(menuBar);
-        
-        //Add radiobuttons to group
-        effectsgroup.add(normalBox);
-        effectsgroup.add(grayscaleBox);
-        effectsgroup.add(snowflakeBox);
-        effectsgroup.add(UnknownBox);
-        
-        //Filechooser
-        fc = new JFileChooser();
-        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        findButton.addActionListener(this);
-        decodeButton.addActionListener(this);
-        filesButton.addActionListener(this);
-        
-        // Folder Browser for Selecting the Image Folder
-        folderBrowser = new JFileChooser();
-        folderBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        
-        // encoder part of the gui - dark gray
-        encoder = new JPanel(new BorderLayout());
-        encoder.setBackground(Color.DARK_GRAY);
-        getContentPane().add(encoder);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // viewer part of the gui - dark gray
-        viewer = new Viewer();
-        viewer.setBackground(Color.DARK_GRAY);
-        getContentPane().add(viewer);
-        viewer.setVisible(false);
-        
-        // decode part of the gui
-        decoder = new JPanel();
-        getContentPane().add(decoder, BorderLayout.SOUTH);
-        GroupLayout layout = new GroupLayout(decoder);
-        decoder.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-        
-        layout.setHorizontalGroup(layout.createSequentialGroup()
+		// size of window
+		setSize(685, 200);
 
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                	.addComponent(label)
-                	.addComponent(decodeButton))
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(textField)
-                    .addComponent(labeleffect)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                             .addComponent(normalBox)
-                            .addComponent(UnknownBox))
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(snowflakeBox)
-                            .addComponent(grayscaleBox)
-                            )))
-                      //.addComponent(labeldecodenote))
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(findButton)
-                    )
-            );
-            
-            layout.linkSize(SwingConstants.HORIZONTAL, findButton , decodeButton);
-     
-            layout.setVerticalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(label)
-                    .addComponent(textField)
-                    .addComponent(findButton))
-                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                     .addComponent(decodeButton)
-                     .addComponent(labeleffect))
-                    
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(normalBox)
-                            .addComponent(snowflakeBox))
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(UnknownBox)
-                            .addComponent(grayscaleBox)
-                            ))
-                 
-                  )
-                // .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                  //   .addComponent(labeldecodenote))
-            );
-            
-        //Display the window.
-        setVisible(true);
+		// menu bar
+		menuBar = new JMenuBar();				// bar
+		fileMenu = new JMenu("File");			// menu
+		encoderBar = new JMenuBar();				// 
+		encoderMenu = new JMenu("Encoder");			// 
+		addMenuItem = new JMenuItem("Add...");	// item
+		addMenuItem.addActionListener(this);
+		viewMenuItem = new JMenuItem("View");	// item
+		viewMenuItem.addActionListener(this);
+		quitMenuItem = new JMenuItem("Quit");	// item
+		quitMenuItem.addActionListener(this);
+		filesMenuItem = new JMenuItem("Select Images Folder");
+		filesMenuItem.addActionListener(this);
+		fileMenu.add(addMenuItem);
+		fileMenu.add(viewMenuItem);
+		fileMenu.add(quitMenuItem);
+		encoderMenu.add(filesMenuItem);
+		menuBar.add(fileMenu);
+		menuBar.add(encoderMenu);
+		setJMenuBar(menuBar);
+
+		//Add radiobuttons to group
+		effectsgroup.add(normalBox);
+		effectsgroup.add(grayscaleBox);
+		effectsgroup.add(snowflakeBox);
+		effectsgroup.add(UnknownBox);
+
+		//Filechooser
+		fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		findButton.addActionListener(this);
+		decodeButton.addActionListener(this);
+		filesButton.addActionListener(this);
+		destinationButton.addActionListener(this);
+
+		// Folder Browser for Selecting the Image Folder
+		folderBrowser = new JFileChooser();
+		folderBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		// Folder Browser for Specifying the Destination Folder
+		destinationBrowser = new JFileChooser();
+		destinationBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		// encoder part of the gui - dark gray
+		encoder = new JPanel(new BorderLayout());
+		encoder.setBackground(Color.DARK_GRAY);
+		getContentPane().add(encoder);
+
+		// viewer part of the gui - dark gray
+		viewer = new Viewer();
+		viewer.setBackground(Color.DARK_GRAY);
+		getContentPane().add(viewer);
+		viewer.setVisible(false);
+
+		// decode part of the gui
+		decoder = new JPanel();
+		getContentPane().add(decoder, BorderLayout.SOUTH);
+		GroupLayout layout = new GroupLayout(decoder);
+		decoder.setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(label)
+						.addComponent(decodeButton))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addComponent(textField)
+								.addComponent(labeleffect)
+								.addGroup(layout.createSequentialGroup()
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+												.addComponent(normalBox)
+												.addComponent(UnknownBox))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(snowflakeBox)
+														.addComponent(grayscaleBox)
+														)))
+														//.addComponent(labeldecodenote))
+														.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(findButton)
+																)
+																);
+
+		layout.linkSize(SwingConstants.HORIZONTAL, findButton , decodeButton);
+
+		layout.setVerticalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						.addComponent(label)
+						.addComponent(textField)
+						.addComponent(findButton))
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(decodeButton)
+								.addComponent(labeleffect))
+
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addGroup(layout.createSequentialGroup()
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+														.addComponent(normalBox)
+														.addComponent(snowflakeBox))
+														.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+																.addComponent(UnknownBox)
+																.addComponent(grayscaleBox)
+																))
+
+										)
+										// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												//   .addComponent(labeldecodenote))
+				);
+
+		//Display the window.
+		setVisible(true);
 	}
 
 	/*
@@ -285,28 +310,58 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 			Index = 0;
 		return listOfImages.get(Index);
 	}
-	
-	private static void encodingUserMenu() {
-		
+
+	/*
+	 * The following function pops up a menu for specifying the encoding options
+	 * 
+	 * Returns a new EncodingOptions class 
+	 * 
+	 * */
+	private EncodingOptions encodingUserMenu() {
+
 		JPanel panel = new JPanel(new GridLayout(0, 1));
+		
+		// Select the path to images
 		panel.add(new JLabel("Select the Folder Containing Images :"));
 		panel.add(filesButton);
 		panel.add(imageFolderPath);
-		panel.add(new JLabel("Select Quality Level (1 Highest) :"));
-        Integer[] items = {1,2,3,4};
-        JComboBox combo = new JComboBox(items);
-        JTextField field1 = new JTextField("");
-        panel.add(combo);
-        panel.add(new JLabel("Enter Output File Name: "));
-        panel.add(field1);
 
-        int result = JOptionPane.showConfirmDialog(null, panel, "Video Encoding Options",
-            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            System.out.println(combo.getSelectedItem()
-                + " " + field1.getText());
-        } else {
-            System.out.println("Cancelled");
-        }
-    }
+		// Specify the Quality-Space Trade-Off
+		panel.add(new JLabel("Select Quality Level (1 Highest) :"));
+		Integer[] items = {1,2,3,4};
+		JComboBox combo = new JComboBox(items);
+		panel.add(combo);
+
+		// Specify the Destination Folder to Save Compressed File
+		panel.add(new JLabel("Select Destination Folder :"));
+		panel.add(destinationButton);
+		panel.add(destinationPath);
+
+		// Specify the Output File Name
+		panel.add(new JLabel("Enter Output File Name: "));
+		JTextField fileNameField = new JTextField("");
+		panel.add(fileNameField);
+		
+		int result = JOptionPane.showConfirmDialog(null, panel, "Video Encoding Options",
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+		if (result == JOptionPane.OK_OPTION) {
+			Encodeworker en = new Encodeworker(this, imageFolderPath.getText(), combo.getSelectedIndex()+1, destinationPath.getText(), fileNameField.getText());
+			en.execute();
+			/*System.out.println(combo.getSelectedItem()
+					+ " " + fileNameField.getText());
+					*/
+		} else {
+			//System.out.println("Cancelled");
+		}
+
+		// Create a New EncodingOptions class based on the user choices
+		EncodingOptions userOptions = new EncodingOptions();
+		userOptions.setCompressionRatio(combo.getSelectedIndex()+1);
+		userOptions.setDestinationPath(destinationPath.getText());
+		userOptions.setFileName(fileNameField.getText());
+
+		//System.out.println(userOptions.getCompressionRatio() + userOptions.getDestinationPath() + userOptions.getFileName());
+		
+		return userOptions;
+	}
 }

@@ -48,6 +48,7 @@ public class Encoder{
 	
 	/* Encoder Constructor for the GUI */
 	Encoder(String paths, String outputfile, int ratio, GUI guiHandler) {
+		
 		this.guiHandler = guiHandler;
 		//load images
 		getFiles(paths);
@@ -66,7 +67,7 @@ public class Encoder{
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try {
-			fos = new FileOutputStream(outputfile);
+			fos = new FileOutputStream(new File(outputfile));
 			out = new ObjectOutputStream(fos);
 			out.writeObject(video);
 			out.close();
