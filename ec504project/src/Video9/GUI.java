@@ -7,11 +7,20 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.swing.*;
+
+import Effects.sepia;
 
 /**
  * GUI Class. Launches a GUI that will allow all of the same operations as the
@@ -48,13 +57,15 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 
 	JTextField textField = new JTextField();
 	JRadioButton normalBox = new JRadioButton("None", true);
-	JRadioButton grayscaleBox = new JRadioButton("Grayscale", false);
+	JRadioButton sepiaBox = new JRadioButton("Sepia", false);
 	JRadioButton snowflakeBox = new JRadioButton("Snowflake", false);
 	JRadioButton UnknownBox = new JRadioButton("Unknown", false);
 	JButton findButton = new JButton("Find File");
 	JButton decodeButton = new JButton("Decode");
 	static JButton filesButton = new JButton("Browse Folders");
+	static JButton binaryButton = new JButton("Browse Files");
 	static JTextField imageFolderPath = new JTextField();
+	static JTextField binaryFilePath = new JTextField();
 	static JButton destinationButton = new JButton("Specify Destination Folder");
 	static JTextField destinationPath = new JTextField();
 	ButtonGroup effectsgroup = new ButtonGroup();
@@ -62,7 +73,14 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	private JFileChooser fc;
 	private JFileChooser folderBrowser;
 	private JFileChooser destinationBrowser;
+	private JFileChooser binaryFileBrowser;
 
+
+	//Threads 
+	static Decodeworker de;
+	static Encodeworker en;
+	ScheduledExecutorService scheduler;
+	boolean viewThreadRunning = false;
 	/*
 	 * Default Constructor
 	 */
@@ -88,22 +106,49 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		}
 		if (source == findButton) {
 			int returnVal = fc.showOpenDialog(this);
-			textField.setText(fc.getSelectedFile().getAbsolutePath());
+			if(returnVal == fc.APPROVE_OPTION){
+				textField.setText(fc.getSelectedFile().getAbsolutePath());
+			}
 		}
 		if (source == decodeButton) {
 			try {
-				handleViewImageEvent();
+				if(de == null){
+					de = new Decodeworker();
+					de.execute();
+				}
+				else if(de.isDone()){
+					System.out.println("Here");
+					de.cancel(true);
+					de = new Decodeworker();
+					de.execute();
+				}
+				else{
+					de = new Decodeworker();
+					de.execute();
+				}
+				System.out.println("Active threads:"+ Thread.activeCount());
+
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 		if(source == filesButton){
 			int returnVal = folderBrowser.showOpenDialog(this);
-			imageFolderPath.setText(folderBrowser.getSelectedFile().getAbsolutePath());
+			if(returnVal == JFileChooser.APPROVE_OPTION) {  
+				imageFolderPath.setText(folderBrowser.getSelectedFile().getAbsolutePath());
+			} 
+		}
+		if(source == binaryButton){
+			int returnVal = binaryFileBrowser.showOpenDialog(this);
+			if(returnVal == JFileChooser.APPROVE_OPTION) {  
+				binaryFilePath.setText(binaryFileBrowser.getSelectedFile().getAbsolutePath());
+			} 
 		}
 		if(source == destinationButton){
 			int returnVal = destinationBrowser.showOpenDialog(this);
-			destinationPath.setText(destinationBrowser.getSelectedFile().getAbsolutePath());
+			if(returnVal == fc.APPROVE_OPTION){
+				destinationPath.setText(destinationBrowser.getSelectedFile().getAbsolutePath());
+			}
 		}
 		if(source == filesMenuItem){
 			encodingUserMenu();
@@ -111,7 +156,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	}
 
 	class Encodeworker extends SwingWorker<Void, Integer> {
-		
+
 		GUI mygui;
 		String destionationPath;
 		String fileName;
@@ -134,11 +179,25 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 			/*
 			 * Encoder en = new Encoder("/home/osarenk1/Desktop/images",
 					"compressed.ser", 2, mygui);
-					*/
+			 */
 			return null;
 		}
 	}
+	class Decodeworker extends SwingWorker<Void, Integer> {
+		@Override
+		public Void doInBackground() {
+			decodeevent();
+			return null;
+		}
+		@Override 
+		public void done()
+		{
+			//System.out.println("HEYY");
+			this.cancel(true);
+		}
 
+
+	}
 	/*
 	 * 
 	 * Function that sets up the gui layout.
@@ -174,7 +233,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 
 		//Add radiobuttons to group
 		effectsgroup.add(normalBox);
-		effectsgroup.add(grayscaleBox);
+		effectsgroup.add(sepiaBox);
 		effectsgroup.add(snowflakeBox);
 		effectsgroup.add(UnknownBox);
 
@@ -184,6 +243,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		findButton.addActionListener(this);
 		decodeButton.addActionListener(this);
 		filesButton.addActionListener(this);
+		binaryButton.addActionListener(this);
 		destinationButton.addActionListener(this);
 
 		// Folder Browser for Selecting the Image Folder
@@ -193,6 +253,10 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		// Folder Browser for Specifying the Destination Folder
 		destinationBrowser = new JFileChooser();
 		destinationBrowser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		// Folder for selecting the binary file
+		binaryFileBrowser = new JFileChooser();
+		binaryFileBrowser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
 		// encoder part of the gui - dark gray
 		encoder = new JPanel(new BorderLayout());
@@ -227,13 +291,13 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 												.addComponent(UnknownBox))
 												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 														.addComponent(snowflakeBox)
-														.addComponent(grayscaleBox)
+														.addComponent(sepiaBox)
 														)))
 														//.addComponent(labeldecodenote))
 														.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 																.addComponent(findButton)
 																)
-																);
+				);
 
 		layout.linkSize(SwingConstants.HORIZONTAL, findButton , decodeButton);
 
@@ -253,12 +317,12 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 														.addComponent(snowflakeBox))
 														.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 																.addComponent(UnknownBox)
-																.addComponent(grayscaleBox)
+																.addComponent(sepiaBox)
 																))
 
 										)
 										// .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-												//   .addComponent(labeldecodenote))
+										//   .addComponent(labeldecodenote))
 				);
 
 		//Display the window.
@@ -279,9 +343,9 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	/*
 	 * Handles an add image event
 	 */
-	protected void handleViewImageEvent() {
+	protected void decodeevent() {
 
-		Decoder d = new Decoder(textField.getText());
+		Decoder d = new Decoder(textField.getText(), this);
 		listOfImages = d.getListOfImages();
 		Index = 0;
 
@@ -294,13 +358,20 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 
 		// manages the order in which the threads are executed. It is necessary
 		// to do something similar for GUI modification
+		//ScheduledExecutorService displayer = Executors.newSingleThreadScheduledExecutor();
+
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
 				new Runnable() {
 					@Override
 					public void run() {
-						viewer.changeImage(nextImage());
+						if(sepiaBox.isSelected())
+							viewer.changeImage(sepia.toSepia(nextImage(), 5));
+						else
+							viewer.changeImage(nextImage());
 					}
 				}, 0, 150, TimeUnit.MILLISECONDS);
+
+
 	}
 
 	// gets the next image in the array list, circles around if it is done
@@ -318,7 +389,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	 * 
 	 * */
 	private void encodingUserMenu() {
-
+		
 		JPanel panel = new JPanel(new GridLayout(0, 1));
 		
 		// Select the path to images
@@ -341,20 +412,25 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		panel.add(new JLabel("Enter Output File Name: "));
 		JTextField fileNameField = new JTextField("");
 		panel.add(fileNameField);
+
+		// Select the path to images
+		panel.add(new JLabel("Select Binary File for Storage :"));
+		panel.add(binaryButton);
+		panel.add(binaryFilePath);
 		
 		int result = JOptionPane.showConfirmDialog(null, panel, "Video Encoding Options",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
-			Encodeworker en = new Encodeworker(this, imageFolderPath.getText(), combo.getSelectedIndex()+1, destinationPath.getText(), fileNameField.getText());
+			en = new Encodeworker(this, imageFolderPath.getText(), combo.getSelectedIndex()+1, destinationPath.getText(), fileNameField.getText());
 			en.execute();
 			/*System.out.println(combo.getSelectedItem()
 					+ " " + fileNameField.getText());
-					*/
+			 */
 		} else {
-			//System.out.println("Cancelled");
+			System.out.println(binaryFilePath.getText());
 		}
 
 		//System.out.println(userOptions.getCompressionRatio() + userOptions.getDestinationPath() + userOptions.getFileName());
-		
+
 	}
 }
