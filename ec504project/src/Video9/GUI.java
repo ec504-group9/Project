@@ -317,7 +317,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	 * Returns a new EncodingOptions class 
 	 * 
 	 * */
-	private EncodingOptions encodingUserMenu() {
+	private void encodingUserMenu() {
 
 		JPanel panel = new JPanel(new GridLayout(0, 1));
 		
@@ -354,14 +354,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 			//System.out.println("Cancelled");
 		}
 
-		// Create a New EncodingOptions class based on the user choices
-		EncodingOptions userOptions = new EncodingOptions();
-		userOptions.setCompressionRatio(combo.getSelectedIndex()+1);
-		userOptions.setDestinationPath(destinationPath.getText());
-		userOptions.setFileName(fileNameField.getText());
-
 		//System.out.println(userOptions.getCompressionRatio() + userOptions.getDestinationPath() + userOptions.getFileName());
 		
-		return userOptions;
 	}
 }

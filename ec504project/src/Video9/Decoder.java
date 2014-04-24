@@ -31,13 +31,22 @@ public class Decoder {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 		//build the images back from serialized video data
 		compressed = video.getImages();
 
 		// Up-sizing the image
 		Upsampler up = new Upsampler();
-		listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+
+		// Use ICBI algorithm for scaling by x2
+		if(video.getSCALING_FACTOR() == 2){
+			listOfImages = up.ICBIUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+			System.out.println("ICBI Interpolation algorithm launched!");
+		}
+		else{
+			listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+			System.out.println("Bilinear interpolation algorithm launched!");
+		}
 
 	}
 

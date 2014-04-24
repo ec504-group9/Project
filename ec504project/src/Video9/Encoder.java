@@ -61,7 +61,7 @@ public class Encoder{
 		// Create a video file containing down-sampled images
 		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
 		
-		guiHandler.progressbar.setNote(String.format("Now saving the encoded file! Please Wait!"));
+		guiHandler.progressbar.setNote(String.format("Saving the encoded file! \n Please Wait!"));
 		
 		// save the object to file
 		FileOutputStream fos = null;

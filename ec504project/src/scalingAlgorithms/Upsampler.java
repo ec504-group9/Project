@@ -254,13 +254,17 @@ public class Upsampler {
 					upSampled.setRGB(i, j, tempPixel);
 				}
 			}
-
+			
+			/*
+			 * FOR TESTING ONLY
+			 * 
 			try {
 				ImageIO.write(upSampled, "png", new File("upsampledimage.png"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			upsampledFrames.add(upSampled);
 		}
 

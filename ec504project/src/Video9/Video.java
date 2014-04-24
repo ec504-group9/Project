@@ -64,9 +64,14 @@ public class Video implements Serializable {
 		//serialize this file
 		out.defaultWriteObject();
 		ImageIO.write(hugeImage, "png", out); // png is lossless
+		
+		/*
+		 * FOR TESTING ONLY
+		 * 
 		File outputfile = new File("HUGE.png");
 	    ImageIO.write(hugeImage, "png", outputfile);
 		System.out.print("Saved!\n");
+		*/
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
