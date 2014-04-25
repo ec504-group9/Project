@@ -8,10 +8,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import Video9.GUI;
+
 
 public class Upsampler {
 
 	private List<BufferedImage> UpsampledImageList;
+	private GUI guihandler;
 
 	public List<BufferedImage> NNUpsample(List<BufferedImage> lr){
 
@@ -44,7 +47,7 @@ public class Upsampler {
 		return UpsampledImageList;
 	}
 
-	public List<BufferedImage> BilinearUpsample(List<BufferedImage> frames, int w, int h, int scalingFactor) {
+	public List<BufferedImage> BilinearUpsample(List<BufferedImage> frames, int w, int h, int scalingFactor, GUI guiHandler) {
 
 		List<BufferedImage> upsampledFrames = new ArrayList<BufferedImage>();
 
@@ -55,6 +58,12 @@ public class Upsampler {
 		float y_ratio = ((float)(h-1))/(h2) ;
 		float x_diff, y_diff, blue, red, green ;
 		//int offset = 0 ;
+
+		// Set up encoding progress bar properties
+		if(guiHandler != null){
+			guiHandler.progressbar.setNote(String.format("Decoding the Frames!"));
+		}
+
 		for(int f=0;f<frames.size(); f++){
 			BufferedImage original = frames.get(f);
 			BufferedImage upSampled = new BufferedImage(w2, h2, BufferedImage.TYPE_INT_RGB);
@@ -93,17 +102,27 @@ public class Upsampler {
 				}
 			}
 			upsampledFrames.add(upSampled);
+			if(guiHandler != null){
+				guiHandler.progressbar.setProgress((100*f)/frames.size());
+			}
 		}
+		guiHandler.progressbar.setProgress(100);
 		System.out.print("Up sampled succesfully!\n");
 		return upsampledFrames;
 	}
 
-	public List<BufferedImage> ICBIUpsample(List<BufferedImage> frames, int w, int h, int scalingFactor) {
+	public List<BufferedImage> ICBIUpsample(List<BufferedImage> frames, int w, int h, int scalingFactor, GUI guiHandler) {
 		List<BufferedImage> upsampledFrames = new ArrayList<BufferedImage>();
 
 		int w2 = w*2;
 		int h2 = h*2;
 		int I1, I2, I3, I4, I5, I6, I7, I8, I9, I30, I31, I32;
+
+		// Set up encoding progress bar properties
+		if(guiHandler != null){
+			guiHandler.progressbar.setNote(String.format("Decoding the Frames!"));
+		}
+		
 		// For each frame 
 		for(int f=0;f<frames.size(); f++){
 
@@ -193,7 +212,7 @@ public class Upsampler {
 				for (int i=3-(j%2);i<w2-3;i+=2) {
 
 					int tempPixel = 0xFF000000;
-					
+
 					// Get the neighbor pixel values for  the derivative calculation 
 					I1 = upSampled.getRGB(i-1,j-2);
 					I2 = upSampled.getRGB(i+1,j-2);
@@ -254,7 +273,7 @@ public class Upsampler {
 					upSampled.setRGB(i, j, tempPixel);
 				}
 			}
-			
+
 			/*
 			 * FOR TESTING ONLY
 			 * 
@@ -264,11 +283,16 @@ public class Upsampler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			*/
+			 */
 			upsampledFrames.add(upSampled);
+			if(guiHandler != null){
+				guiHandler.progressbar.setProgress((100*f)/frames.size());
+			}
 		}
+		guiHandler.progressbar.setProgress(100);
 
 		System.out.print("Up sampled succesfully!\n");
 		return upsampledFrames;
 	}
+
 }
