@@ -15,7 +15,25 @@ public class Video implements Serializable {
 	private transient List<BufferedImage> Images;
 	private int SCALING_FACTOR;
 	private final int FRAMES_PER_COL = 40;
-	private byte[][] arbitrary;
+	private byte[] arbitrary;
+	private String arbitrary_name;
+	
+	public String getArbitrary_name() {
+		return arbitrary_name;
+	}
+
+	public void setArbitrary_name(String arbitrary_name) {
+		this.arbitrary_name = arbitrary_name;
+	}
+
+	public byte[] getArbitrary() {
+		return arbitrary;
+	}
+
+	public void setArbitrary(byte[] arbitrary) {
+		this.arbitrary = arbitrary;
+	}
+
 	
 	public int getSCALING_FACTOR() {
 		return SCALING_FACTOR;
@@ -91,13 +109,5 @@ public class Video implements Serializable {
 			Images.add(image);
 		}	
 		
-	}
-
-	public byte[][] getArbitrary() {
-		return arbitrary;
-	}
-
-	public void setArbitrary(byte[][] arbitrary) {
-		this.arbitrary = arbitrary;
 	}
 }
