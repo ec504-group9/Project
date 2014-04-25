@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -18,59 +16,27 @@ import scalingAlgorithms.Downsampler;
 
 public class Encoder{
 
-	public int[][] breakdown;
 	public List<BufferedImage> buffered;
-	private GUI guiHandler;
 	private Video video;
-	
-	/* Encoder for the Command Line  */
-	Encoder(String paths, String arbitrary, String outputfile, int ratio) {
-		//load images
-		getFiles(paths);
 
-		// Down-sample the image by 4x
-		Downsampler ds = new Downsampler(guiHandler);
-		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
-		DownsampledImages = ds.Downsample(buffered, ratio);
-		
-		// Create a video file containing down-sampled images
-		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
-		getArbitraryFiles(arbitrary);
-		
-		// save the object to file
-		FileOutputStream fos = null;
-		ObjectOutputStream out = null;
-		try {
-			fos = new FileOutputStream(outputfile);
-			out = new ObjectOutputStream(fos);
-			out.writeObject(video);
-			out.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		System.out.print("File sucsessfully saved\n");
-	}
-	
 	/* Encoder Constructor for the GUI */
-	Encoder(String paths, String arbitrary, String outputfile, int ratio, GUI guiHandler) {
-		
-		this.guiHandler = guiHandler;
+	Encoder(String paths[], String[] arbitrary, String outputfile, int ratio, GUI guiHandler) {
+
 		//load images
 		getFiles(paths);
 		System.out.println("111");
-		
+
 		// Down-sample the image by 4x
 		Downsampler ds = new Downsampler(guiHandler);
 		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
 		DownsampledImages = ds.Downsample(buffered, ratio);
-		
+
 		// Create a video file containing down-sampled images
 		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
 		getArbitraryFiles(arbitrary);
-		
-		guiHandler.progressbar.setNote(String.format("Please Wait! Saving the encoded file!"));
-		
+		if(guiHandler != null)
+			guiHandler.progressbar.setNote(String.format("Please Wait! Saving the encoded file!"));
+
 		// save the object to file
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
@@ -82,70 +48,93 @@ public class Encoder{
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		guiHandler.progressbar.close();
+		if(guiHandler != null)
+			guiHandler.progressbar.close();
 		JOptionPane.showMessageDialog(null,
-			    "File succesfully saved!");
+				"File succesfully saved!");
 		System.out.print("File sucsessfully saved\n");
 	}
 
-	//get all image file from the folder
-	void getFiles(String path){
-		
-		File folder = new File(path);
-		File[] listOfFiles = folder.listFiles();
+	//get files from list of image files
+	void getFiles(String[] paths){
+		if(paths == null) return;
+		int num = paths.length;
+		if(num<=0) return;
 		buffered = new ArrayList<BufferedImage>();
-		
-		for (File file : listOfFiles) {
-			/*
-			try {
-				String ext = Files.probeContentType(Paths.get(file));
-				System.out.print(ext+"\n");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			if (file.isFile()) {
-				buffered.add(Loadimage(file));
+
+		//if file paths contains a folder
+		File folder = new File(paths[0]);
+		if(folder.isDirectory()){
+			File[] listOfFiles = folder.listFiles();
+
+			for (File file : listOfFiles) {
+				//TODO
+				//convert check statement to check if it is a jpg file
+				if (file.isFile()) {
+					buffered.add(Loadimage(file));
+				}
 			}
 		}
-	}
-	
-	//get files from list of files
-	void getFiles(String[] paths){
-		
-		for (String filename : paths){
-			try {
-				String ext = Files.probeContentType(Paths.get(filename));
-				System.out.print(ext+"\n");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+		//else it is a list of files
+		else{
+			for (String filename : paths){
+				File file = new File(filename);
+				buffered.add(Loadimage(file));
 			}
-			File file = new File(filename);
-			buffered.add(Loadimage(file));
 		}
 
 	}
 
 	//get the arbitrary binary file
-	void getArbitraryFiles(String path){
-		if(path == null) return;
-		if(path.length()<=1) return;
+	void getArbitraryFiles(String[] paths){
+		if(paths == null) return;
+		int num = paths.length;
+		if(num<=0) return;
+		List<String> names = new ArrayList<String>();
+		List<byte[]> listOfArbitrary = new ArrayList<byte[]>();
 
-		File file = new File(path);
-		byte[] arbitrary = new byte[(int) file.length()];
-		FileInputStream fis;
-		try {
-			fis = new FileInputStream(path);
-			fis.read(arbitrary);  
-			fis.close();  
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		video.setArbitrary(arbitrary);
-		video.setArbitrary_name(file.getName());
+
+		//if file paths contains a folder
+		File folder = new File(paths[0]);
+		if(folder.isDirectory()){
+			File[] listOfFiles = folder.listFiles();
+			for (File file : listOfFiles) {
+				byte[] arbitrary = new byte[(int) file.length()];
+				FileInputStream fis;
+				try {
+					fis = new FileInputStream(file);
+					fis.read(arbitrary);
+					fis.close();
+					listOfArbitrary.add(arbitrary);
+					names.add(file.getName());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
+		}
+
+		//else it is list of files
+		for(String path : paths){
+			File file = new File(path);
+			byte[] arbitrary = new byte[(int) file.length()];
+			FileInputStream fis;
+			try {
+				fis = new FileInputStream(path);
+				fis.read(arbitrary);  
+				fis.close();  
+				listOfArbitrary.add(arbitrary);
+				names.add(file.getName());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
+		video.setArbitrary(listOfArbitrary);
+		video.setArbitrary_name(names);
 	}
 
 	//loads images from the list of files
@@ -158,5 +147,16 @@ public class Encoder{
 		}
 		return Image;
 	}
-	
+
+
+	/*
+			try {
+				String ext = Files.probeContentType(Paths.get(filename));
+				System.out.print(ext+"\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	 */
 }

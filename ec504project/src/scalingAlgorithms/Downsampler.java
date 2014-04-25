@@ -30,11 +30,12 @@ public class Downsampler {
 	public List<BufferedImage> Downsample(List<BufferedImage> hr, int ScaleFactor){
 
 		DownsampledImageList = new ArrayList<BufferedImage>();
-
-		// Set up encoding progress bar properties
-		guiHandler.progressbar.setMaximum(100);
-		guiHandler.progressbar.setNote(String.format("Encoding the Frames!"));
-		
+		if (guiHandler != null)
+		{
+			// Set up encoding progress bar properties
+			guiHandler.progressbar.setMaximum(100);
+			guiHandler.progressbar.setNote(String.format("Encoding the Frames!"));
+		}
 		for(int i=0; i<hr.size();i++){
 
 			BufferedImage image = new BufferedImage(hr.get(0).getWidth()/ScaleFactor, hr.get(0).getHeight()/ScaleFactor, BufferedImage.TYPE_INT_RGB);
@@ -44,8 +45,10 @@ public class Downsampler {
 					image.setRGB(j, k, hr.get(i).getRGB(ScaleFactor*j, ScaleFactor*k));
 
 				}
+			
 			DownsampledImageList.add(image);
-			guiHandler.progressbar.setProgress((100*i)/hr.size());
+			if(guiHandler != null)
+				guiHandler.progressbar.setProgress((100*i)/hr.size());
 		}
 
 		/*
