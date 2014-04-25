@@ -2,10 +2,11 @@ package Video9;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import scalingAlgorithms.Upsampler;
 
@@ -57,5 +58,22 @@ public class Decoder {
 
 	public static List<BufferedImage> getListOfImages() {
 		return listOfImages;
+	}
+	
+	
+	//set the arbitrary binary file
+	void setArbitraryFiles(String path){
+		if(path == null) return;
+
+		FileOutputStream fis;
+		try {
+			fis = new FileOutputStream(path+"/"+video.getArbitrary_name());
+			fis.write(video.getArbitrary());  
+			fis.close();  
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 }
