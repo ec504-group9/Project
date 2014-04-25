@@ -20,7 +20,10 @@ import java.util.concurrent.TimeoutException;
 
 import javax.swing.*;
 
+import Effects.Snow;
+import Effects.Tile;
 import Effects.sepia;
+import Effects.snowflake;
 
 /**
  * GUI Class. Launches a GUI that will allow all of the same operations as the
@@ -46,7 +49,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	private JMenuItem addMenuItem, viewMenuItem, quitMenuItem, filesMenuItem;
 
 	private JPanel encoder, decoder;
-	private Viewer viewer;
+	private static Viewer viewer;
 	
 	private String decodePath;
 
@@ -61,7 +64,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	JRadioButton normalBox = new JRadioButton("None", true);
 	JRadioButton sepiaBox = new JRadioButton("Sepia", false);
 	JRadioButton snowflakeBox = new JRadioButton("Snowflake", false);
-	JRadioButton UnknownBox = new JRadioButton("Unknown", false);
+	JRadioButton UnknownBox = new JRadioButton("Tiling", false);
 	JButton findButton = new JButton("Find File");
 	JButton decodeButton = new JButton("Decode");
 	static JButton filesButton = new JButton("Browse Folders");
@@ -186,7 +189,11 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		@Override
 		public Void doInBackground() {
 			String fullName = destionationPath + "/" + fileName + ".ser";
-			Encoder en = new Encoder(pathToImages, arbPath,
+			String[] path = new String[1];
+			path[0] = pathToImages;
+			String[] paths = new String[1];
+			paths[0] = arbPath;
+			Encoder en = new Encoder(path, paths,
 					fullName, compresstionRatio, mygui);
 			/*
 			 * Encoder en = new Encoder("/home/osarenk1/Desktop/images",
@@ -372,14 +379,26 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		// to do something similar for GUI modification
 		//ScheduledExecutorService displayer = Executors.newSingleThreadScheduledExecutor();
 
+		final Snow snow = new Snow();
+		snow.makeSnowflakes(width, height);
+		
+		final Tile tiles = new Tile();
+		
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
 				new Runnable() {
 					@Override
 					public void run() {
+						if(Index == listOfImages.size()) return;
+						
 						if(sepiaBox.isSelected())
 							viewer.changeImage(sepia.toSepia(nextImage(), 5));
+						else if (snowflakeBox.isSelected())
+							viewer.changeImage(snow.drawSnow(nextImage()));
+						else if (UnknownBox.isSelected())
+							viewer.changeImage(tiles.drawTiles(nextImage()));
 						else
 							viewer.changeImage(nextImage());
+
 					}
 				}, 0, 150, TimeUnit.MILLISECONDS);
 
@@ -389,8 +408,14 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	// gets the next image in the array list, circles around if it is done
 	static BufferedImage nextImage() {
 		Index++;
-		if (Index >= listOfImages.size())
-			Index = 0;
+		if (Index >= listOfImages.size()){
+			
+			viewer.setSize(0, 0);
+			viewer.setVisible(false);
+
+			
+		}
+
 		return listOfImages.get(Index);
 	}
 

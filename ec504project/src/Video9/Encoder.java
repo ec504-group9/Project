@@ -33,7 +33,9 @@ public class Encoder{
 		// Down-sample the image by 4x
 		Downsampler ds = new Downsampler(guiHandler);
 		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
+		System.out.print(buffered.size());
 		DownsampledImages = ds.Downsample(buffered, ratio);
+		System.out.print(buffered.size());
 
 		// Create a video file containing down-sampled images
 		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
@@ -72,13 +74,7 @@ public class Encoder{
 			File[] listOfFiles = folder.listFiles();
 
 			for (File file : listOfFiles) {
-				try {
-					if (Files.probeContentType(Paths.get(file.getName())) == imageFileType)
 						buffered.add(Loadimage(file));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		}
 
@@ -86,13 +82,7 @@ public class Encoder{
 		else if(num>1){
 			for (String filename : paths){
 				File file = new File(filename);
-				try {
-					if (Files.probeContentType(Paths.get(file.getName())) == imageFileType)
 						buffered.add(Loadimage(file));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		}
 		else
