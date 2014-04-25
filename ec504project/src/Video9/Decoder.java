@@ -1,7 +1,6 @@
 package Video9;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,11 +13,9 @@ import scalingAlgorithms.Upsampler;
 public class Decoder {
 
 	//global objects to be changed and viewed
-	public static int Index;
 	public static Video video;
 	private static List<BufferedImage> listOfImages;
 	public static List<BufferedImage> compressed;
-	public static int[][] encoded;
 
 	Decoder(String videofile, GUI guiHandler) {
 
@@ -67,16 +64,30 @@ public class Decoder {
 	//set the arbitrary binary file
 	void setArbitraryFiles(String path){
 		if(path == null) return;
+
 		path = path.substring(0, path.lastIndexOf('/'));
-		FileOutputStream fis;
-		try {
-			fis = new FileOutputStream(path+"/"+video.getArbitrary_name());
-			fis.write(video.getArbitrary());  
-			fis.close();  
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		List<byte[]> listOfArbitrary = video.getArbitrary();
+		List<String> listOfNames = video.getArbitrary_name();
+		
+		if(listOfArbitrary == null) return;
+		
+		int num = listOfArbitrary.size();
+
+		if(num <= 0) return;
+		
+		for(int i=0; i<num; i++){
+			String name = listOfNames.get(i);
+			byte[] arbitrary = listOfArbitrary.get(i);
+			try {
+				FileOutputStream fis;
+				fis = new FileOutputStream(path+"/"+name);
+				fis.write(arbitrary);  
+				fis.close();  
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
 	}
 }

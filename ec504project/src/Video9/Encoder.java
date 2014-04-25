@@ -18,6 +18,7 @@ public class Encoder{
 
 	public List<BufferedImage> buffered;
 	private Video video;
+	private String imageFileType = "image/jpeg";
 
 	/* Encoder Constructor for the GUI */
 	Encoder(String paths[], String[] arbitrary, String outputfile, int ratio, GUI guiHandler) {
@@ -68,21 +69,21 @@ public class Encoder{
 			File[] listOfFiles = folder.listFiles();
 
 			for (File file : listOfFiles) {
-				//TODO
-				//convert check statement to check if it is a jpg file
-				if (file.isFile()) {
+				if (file.getName() == imageFileType)
 					buffered.add(Loadimage(file));
-				}
 			}
 		}
 
 		//else it is a list of files
-		else{
+		else if(num>1){
 			for (String filename : paths){
 				File file = new File(filename);
-				buffered.add(Loadimage(file));
+				if (file.getName() == imageFileType)
+					buffered.add(Loadimage(file));
 			}
 		}
+		else
+			return;
 
 	}
 
@@ -117,7 +118,7 @@ public class Encoder{
 		}
 
 		//else it is list of files
-		else {
+		else if(num>1){
 			for(String path : paths){
 				File file = new File(path);
 				byte[] arbitrary = new byte[(int) file.length()];
@@ -135,6 +136,8 @@ public class Encoder{
 				} 
 			}
 		}
+		else
+			return;
 		video.setArbitrary(listOfArbitrary);
 		video.setArbitrary_name(names);
 	}
