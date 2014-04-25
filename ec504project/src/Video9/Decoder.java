@@ -1,6 +1,7 @@
 package Video9;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,6 +41,8 @@ public class Decoder {
 
 		//build the images back from serialized video data
 		compressed = video.getImages();
+		
+		if(video.getArbitrary() != null) setArbitraryFiles(videofile);
 
 		// Up-sizing the image
 		Upsampler up = new Upsampler();
@@ -64,7 +67,7 @@ public class Decoder {
 	//set the arbitrary binary file
 	void setArbitraryFiles(String path){
 		if(path == null) return;
-
+		path = path.substring(0, path.lastIndexOf('/'));
 		FileOutputStream fis;
 		try {
 			fis = new FileOutputStream(path+"/"+video.getArbitrary_name());

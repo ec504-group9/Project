@@ -51,6 +51,7 @@ public class Video implements Serializable {
 		this.imageWidth = imageWidth;
 		this.Images = ImageSequence;
 		this.SCALING_FACTOR = scaling;
+		this.arbitrary = null;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {

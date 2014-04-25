@@ -31,7 +31,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws IOException {
 		
-		GUI gui = new GUI();
+		GUI gui = new GUI("/home/sahin/Desktop/samll.ser");
 		//BufferedImage im = sepia.toSepia(ImageIO.read(new File("/home/sahin/Desktop/Images/image-123.png")), 5);
 		//ImageIO.write(im, "png", new File("/home/sahin/Desktop/sepp.png"));
 		//Encoder e = new Encoder("/home/osarenk1/Desktop/images", "compressed.ser", 2);

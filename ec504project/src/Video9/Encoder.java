@@ -24,7 +24,7 @@ public class Encoder{
 	private Video video;
 	
 	/* Encoder for the Command Line  */
-	Encoder(String paths, String outputfile, int ratio) {
+	Encoder(String paths, String arbitrary, String outputfile, int ratio) {
 		//load images
 		getFiles(paths);
 
@@ -35,6 +35,7 @@ public class Encoder{
 		
 		// Create a video file containing down-sampled images
 		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		getArbitraryFiles(arbitrary);
 		
 		// save the object to file
 		FileOutputStream fos = null;
@@ -52,19 +53,21 @@ public class Encoder{
 	}
 	
 	/* Encoder Constructor for the GUI */
-	Encoder(String paths, String outputfile, int ratio, GUI guiHandler) {
+	Encoder(String paths, String arbitrary, String outputfile, int ratio, GUI guiHandler) {
 		
 		this.guiHandler = guiHandler;
 		//load images
 		getFiles(paths);
-
+		System.out.println("111");
+		
 		// Down-sample the image by 4x
 		Downsampler ds = new Downsampler(guiHandler);
 		List<BufferedImage> DownsampledImages = new ArrayList<BufferedImage>();
 		DownsampledImages = ds.Downsample(buffered, ratio);
 		
 		// Create a video file containing down-sampled images
-		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		getArbitraryFiles(arbitrary);
 		
 		guiHandler.progressbar.setNote(String.format("Please Wait! Saving the encoded file!"));
 		
@@ -127,6 +130,7 @@ public class Encoder{
 	//get the arbitrary binary file
 	void getArbitraryFiles(String path){
 		if(path == null) return;
+		if(path.length()<=1) return;
 
 		File file = new File(path);
 		byte[] arbitrary = new byte[(int) file.length()];

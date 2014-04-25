@@ -47,6 +47,8 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 
 	private JPanel encoder, decoder;
 	private Viewer viewer;
+	
+	private String decodePath;
 
 	public ProgressMonitor progressbar = new ProgressMonitor(this, "", "", 0, 0);
 
@@ -87,6 +89,13 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	public GUI() {
 		this.run();
 	}
+	
+	public GUI(String path){
+		this.run();
+		decodePath = path;
+		de = new Decodeworker();
+		de.execute();		
+	}
 
 	/*
 	 * Listens for ActionEvents and processes them accordingly.
@@ -111,6 +120,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 			}
 		}
 		if (source == decodeButton) {
+			decodePath = textField.getText();
 			try {
 				if(de == null){
 					de = new Decodeworker();
@@ -162,19 +172,21 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		String fileName;
 		String pathToImages;
 		int compresstionRatio;
+		String arbPath;
 
-		public Encodeworker(GUI myparent, String pathToImages, int compresstionRatio, String destionationPath, String fileName) {
+		public Encodeworker(GUI myparent, String pathToImages, int compresstionRatio, String destionationPath, String fileName, String arbPath) {
 			this.mygui = myparent;
 			this.compresstionRatio = compresstionRatio;
 			this.destionationPath = destionationPath;
 			this.fileName = fileName;
 			this.pathToImages = pathToImages;
+			this.arbPath = arbPath;
 		}
 
 		@Override
 		public Void doInBackground() {
 			String fullName = destionationPath + "/" + fileName + ".ser";
-			Encoder en = new Encoder(pathToImages,
+			Encoder en = new Encoder(pathToImages, arbPath,
 					fullName, compresstionRatio, mygui);
 			/*
 			 * Encoder en = new Encoder("/home/osarenk1/Desktop/images",
@@ -345,7 +357,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 	 */
 	protected void decodeevent() {
 
-		Decoder d = new Decoder(textField.getText(), this);
+		Decoder d = new Decoder(decodePath, this);
 		listOfImages = d.getListOfImages();
 		Index = 0;
 
@@ -421,7 +433,7 @@ public class GUI extends JFrame implements ActionListener, Runnable {
 		int result = JOptionPane.showConfirmDialog(null, panel, "Video Encoding Options",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 		if (result == JOptionPane.OK_OPTION) {
-			en = new Encodeworker(this, imageFolderPath.getText(), combo.getSelectedIndex()+1, destinationPath.getText(), fileNameField.getText());
+			en = new Encodeworker(this, imageFolderPath.getText(), combo.getSelectedIndex()+1, destinationPath.getText(), fileNameField.getText(), binaryFilePath.getText());
 			en.execute();
 			/*System.out.println(combo.getSelectedItem()
 					+ " " + fileNameField.getText());
