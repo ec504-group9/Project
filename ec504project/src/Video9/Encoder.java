@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -18,7 +20,8 @@ public class Encoder{
 
 	public List<BufferedImage> buffered;
 	private Video video;
-	private String imageFileType = "image/jpeg";
+	//private String imageFileType = "image/jpeg";
+	private String imageFileType = "image/png";
 
 	/* Encoder Constructor for the GUI */
 	Encoder(String paths[], String[] arbitrary, String outputfile, int ratio, GUI guiHandler) {
@@ -69,8 +72,13 @@ public class Encoder{
 			File[] listOfFiles = folder.listFiles();
 
 			for (File file : listOfFiles) {
-				if (file.getName() == imageFileType)
-					buffered.add(Loadimage(file));
+				try {
+					if (Files.probeContentType(Paths.get(file.getName())) == imageFileType)
+						buffered.add(Loadimage(file));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -78,8 +86,13 @@ public class Encoder{
 		else if(num>1){
 			for (String filename : paths){
 				File file = new File(filename);
-				if (file.getName() == imageFileType)
-					buffered.add(Loadimage(file));
+				try {
+					if (Files.probeContentType(Paths.get(file.getName())) == imageFileType)
+						buffered.add(Loadimage(file));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		else
