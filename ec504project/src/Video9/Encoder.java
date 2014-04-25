@@ -117,21 +117,23 @@ public class Encoder{
 		}
 
 		//else it is list of files
-		for(String path : paths){
-			File file = new File(path);
-			byte[] arbitrary = new byte[(int) file.length()];
-			FileInputStream fis;
-			try {
-				fis = new FileInputStream(path);
-				fis.read(arbitrary);  
-				fis.close();  
-				listOfArbitrary.add(arbitrary);
-				names.add(file.getName());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+		else {
+			for(String path : paths){
+				File file = new File(path);
+				byte[] arbitrary = new byte[(int) file.length()];
+				FileInputStream fis;
+				try {
+					fis = new FileInputStream(path);
+					fis.read(arbitrary);  
+					fis.close();  
+					listOfArbitrary.add(arbitrary);
+					names.add(file.getName());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
 		}
 		video.setArbitrary(listOfArbitrary);
 		video.setArbitrary_name(names);
