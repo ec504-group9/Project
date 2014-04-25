@@ -2,11 +2,12 @@ package Video9;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -20,6 +21,7 @@ public class Encoder{
 	public int[][] breakdown;
 	public List<BufferedImage> buffered;
 	private GUI guiHandler;
+	private Video video;
 	
 	/* Encoder for the Command Line  */
 	Encoder(String paths, String outputfile, int ratio) {
@@ -32,7 +34,7 @@ public class Encoder{
 		DownsampledImages = ds.Downsample(buffered, ratio);
 		
 		// Create a video file containing down-sampled images
-		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
+		video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
 		
 		// save the object to file
 		FileOutputStream fos = null;
@@ -120,6 +122,26 @@ public class Encoder{
 			buffered.add(Loadimage(file));
 		}
 
+	}
+
+	//get the arbitrary binary file
+	void getArbitraryFiles(String path){
+		if(path == null) return;
+
+		File file = new File(path);
+		byte[] arbitrary = new byte[(int) file.length()];
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(path);
+			fis.read(arbitrary);  
+			fis.close();  
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		video.setArbitrary(arbitrary);
+		video.setArbitrary_name(file.getName());
 	}
 
 	//loads images from the list of files
