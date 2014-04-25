@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -61,7 +64,7 @@ public class Encoder{
 		// Create a video file containing down-sampled images
 		Video video = new Video(DownsampledImages.size(), DownsampledImages.get(0).getHeight(), DownsampledImages.get(0).getWidth(), DownsampledImages, ratio);
 		
-		guiHandler.progressbar.setNote(String.format("Saving the encoded file! \n Please Wait!"));
+		guiHandler.progressbar.setNote(String.format("Please Wait! Saving the encoded file!"));
 		
 		// save the object to file
 		FileOutputStream fos = null;
@@ -88,6 +91,14 @@ public class Encoder{
 		buffered = new ArrayList<BufferedImage>();
 		
 		for (File file : listOfFiles) {
+			/*
+			try {
+				String ext = Files.probeContentType(Paths.get(file));
+				System.out.print(ext+"\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 			if (file.isFile()) {
 				buffered.add(Loadimage(file));
 			}
@@ -98,6 +109,13 @@ public class Encoder{
 	void getFiles(String[] paths){
 		
 		for (String filename : paths){
+			try {
+				String ext = Files.probeContentType(Paths.get(filename));
+				System.out.print(ext+"\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			File file = new File(filename);
 			buffered.add(Loadimage(file));
 		}

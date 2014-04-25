@@ -18,8 +18,13 @@ public class Decoder {
 	public static List<BufferedImage> compressed;
 	public static int[][] encoded;
 
-	Decoder(String videofile) {
+	Decoder(String videofile, GUI guiHandler) {
 
+		// Notify user to wait for the deserialization
+		if(guiHandler != null){
+			guiHandler.progressbar.setMaximum(100);
+			guiHandler.progressbar.setNote(String.format("Wait! Deserializing the File!"));
+		}
 		// read the object from file
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
@@ -40,11 +45,11 @@ public class Decoder {
 
 		// Use ICBI algorithm for scaling by x2
 		if(video.getSCALING_FACTOR() == 2){
-			listOfImages = up.ICBIUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+			listOfImages = up.ICBIUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR(), guiHandler);
 			System.out.println("ICBI Interpolation algorithm launched!");
 		}
 		else{
-			listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR());
+			listOfImages = up.BilinearUpsample(compressed, compressed.get(0).getWidth(), compressed.get(0).getHeight(), video.getSCALING_FACTOR(), guiHandler);
 			System.out.println("Bilinear interpolation algorithm launched!");
 		}
 

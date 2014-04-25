@@ -7,6 +7,7 @@
 package Video9;
 
 import scalingAlgorithms.*;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -16,6 +17,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Effects.sepia;
+
 /**
  *
  * @author Jeannie
@@ -24,10 +27,13 @@ public class Main {
 
 	/**
 	 * @param args the command line arguments
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		GUI gui = new GUI();
+		//BufferedImage im = sepia.toSepia(ImageIO.read(new File("/home/sahin/Desktop/Images/image-123.png")), 5);
+		//ImageIO.write(im, "png", new File("/home/sahin/Desktop/sepp.png"));
 		//Encoder e = new Encoder("/home/osarenk1/Desktop/images", "compressed.ser", 2);
 		//Encoder e = new Encoder("/home/onur/git/Images", "compressed.ser", 2);
 		//Decoder d = new Decoder("compressed.ser");
